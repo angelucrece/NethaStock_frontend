@@ -148,13 +148,13 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
         ),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             child: Container(
               width: size.width > 500 ? 500 : size.width * 0.9,
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.blue.shade100.withOpacity(0.3),
@@ -172,8 +172,8 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                     Column(
                       children: [
                         Container(
-                          width: 80,
-                          height: 80,
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
@@ -198,7 +198,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                             size: 40,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
                         Text(
                           'Créer un compte',
                           style: GoogleFonts.poppins(
@@ -208,7 +208,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                             letterSpacing: 0.5,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         Text(
                           'Rejoignez-nous et commencez votre voyage',
                           style: GoogleFonts.poppins(
@@ -220,15 +220,15 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 8),
                     const Divider(color: Colors.grey),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 8),
 
                     // Formulaire en grille pour meilleure organisation
                     GridView.count(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       childAspectRatio: size.width > 500 ? 3 : 2.5,
@@ -259,7 +259,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                                   ),
                                   filled: true,
                                   fillColor: Colors.grey.shade50,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return 'Requis';
@@ -297,7 +297,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                                   ),
                                   filled: true,
                                   fillColor: Colors.grey.shade50,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return 'Requis';
@@ -335,7 +335,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                                   ),
                                   filled: true,
                                   fillColor: Colors.grey.shade50,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (value) {
@@ -390,7 +390,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Rôle
                     Column(
@@ -441,7 +441,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Mot de passe
                     Column(
@@ -489,7 +489,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
 
                     // Confirmation mot de passe
                     Column(
@@ -536,15 +536,15 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
 
                     // Conditions
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: 24,
-                          width: 24,
+                          height: 12,
+                          width: 12,
                           child: Checkbox(
                             value: _acceptTerms,
                             onChanged: (value) => setState(() => _acceptTerms = value ?? false),
@@ -555,7 +555,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: RichText(
                             text: TextSpan(
@@ -595,7 +595,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
 
                     // Bouton d'inscription
                     SizedBox(
@@ -614,8 +614,8 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                         ),
                         child: _isSubmitting
                             ? const SizedBox(
-                          width: 24,
-                          height: 24,
+                          width: 12,
+                          height: 12,
                           child: CircularProgressIndicator(
                             strokeWidth: 3,
                             color: Colors.white,
@@ -631,7 +631,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
 
                     // Lien vers connexion
                     Row(
@@ -660,7 +660,7 @@ class _BeautifulInscriptionScreenState extends State<BeautifulInscriptionScreen>
                       ],
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
 
                     // Pied de page
                     Text(

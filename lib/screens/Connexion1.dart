@@ -39,10 +39,10 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
         ),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             child: Container(
               width: size.width > 500 ? 450 : size.width * 0.9,
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -65,8 +65,8 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       child: Column(
                         children: [
                           Container(
-                            width: 80,
-                            height: 80,
+                            width: 60,
+                            height: 60,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment.topLeft,
@@ -91,7 +91,7 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                               size: 40,
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                           Text(
                             'Bonjour',
                             style: GoogleFonts.poppins(
@@ -123,9 +123,9 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 30),
-                    const Divider(height: 1, color: Colors.grey),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    // const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 20),
 
                     // Champ email avec icône
                     Text(
@@ -178,7 +178,7 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       },
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Champ mot de passe avec icône
                     Text(
@@ -251,8 +251,8 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                         Row(
                           children: [
                             SizedBox(
-                              height: 24,
-                              width: 24,
+                              height: 12,
+                              width: 12,
                               child: Theme(
                                 data: ThemeData(
                                   unselectedWidgetColor: Colors.grey.shade400,
@@ -302,7 +302,7 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 15),
 
                     // Bouton de connexion
                     SizedBox(
@@ -332,7 +332,7 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Séparateur
                     Row(
@@ -344,7 +344,7 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: Text(
                             'Ou',
                             style: GoogleFonts.poppins(
@@ -362,7 +362,7 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Bouton d'inscription
                     SizedBox(
@@ -390,12 +390,12 @@ class _SublimeLoginScreenState extends State<SublimeLoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
 
                     // Pied de page
                     Center(
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.only(top: 10),
                         child: Text(
                           '© 2025 Nethasoft sarl. Tous droits réservés.',
                           style: GoogleFonts.poppins(

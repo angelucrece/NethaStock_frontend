@@ -187,8 +187,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         children: [
           // Illustration avec image SVG
           Container(
-            width: 280, // Légèrement plus grand pour les images détaillées
-            height: 280,
+            width: 200, // Légèrement plus grand pour les images détaillées
+            height: 200,
             decoration: BoxDecoration(
               color: page.color.withOpacity(0.08),
               shape: BoxShape.circle,
