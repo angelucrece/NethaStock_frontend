@@ -274,10 +274,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Logo de l'application
-                    Icon(
-                      Icons.inventory_2,
-                      size: 60,
-                      color: Colors.blue.shade700,
+                    // Icon(
+                    //   Icons.inventory_2,
+                    //   size: 60,
+                    //   color: Colors.blue.shade700,
+                    // ),
+                    Image.asset(
+                      'assets/images/logo.jpg',
+                      height: 100,
+//                    width: 100,
+
                     ),
                     SizedBox(height: 16),
 
@@ -294,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     // Sous-titre
                     Text(
-                      'Gestion de Stocks',
+                      'Bienvenue dans votre Gestionnaire de Stocks',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey.shade600,

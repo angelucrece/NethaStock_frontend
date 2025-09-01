@@ -7,12 +7,37 @@ class AppConstants {
   static const String apiBaseUrl = 'http://localhost:3000/api';
 
   // Routes
-  static const String loginRoute = '/login';
+  // POST /api/auth/login - Connexion utilisateur
+  static const String loginRoute = '/auth/login';
+  // POST /api/auth/register - Création d'un nouvel utilisateur (Admin uniquement)
+  static const String registerRoute=' /auth/register';
+  // GET /api/auth/verify - Vérification de la validité du token
+  static const String verifyRoute=' /auth/register';
+  // POST /api/auth/refresh - Renouvellement du token
+  //static const String refreshRoute=' /auth/register';
+  // GET /api/categories - Liste toutes les catégories,     Créer une nouvelle catégorie (Admin uniquement)
+  static const String categoriesRoute = '/api/categories';
+  // GET /api/categories/:id - Détails d'une catégorie ,Modifier une catégorie (Admin uniquement),  Supprimer une catégorie (Admin uniquement)
+  static const String categorieRoute = '/api/categories/:id';
+  // GET /api/movements - Historique des mouvements avec pagination et filtres,POST /api/movements - Créer un nouveau mouvement de stock
+  static const String movementsRoute = '/api/movements';
+  // GET /api/movements/pending - Mouvements en attente de validation (Admin)
+  static const String movementRoute = '/api/movements/pending';
+  // PUT /api/movements/:id/validate - Valider un mouvement (Admin)
+  // GET /api/movements/stats - Statistiques des mouvements
   static const String dashboardRoute = '/dashboard';
-  static const String productsRoute = '/products';
-  static const String movementsRoute = '/movements';
-  static const String categoriesRoute = '/categories';
-  static const String profileRoute = '/profile';
+  // GET /api/products - Liste des produits avec recherche et pagination,  // POST /api/products - Créer un nouveau produit (Admin uniquement)
+  static const String productsRoute = '/api/products';
+  // GET /api/products/:id - Détails d'un produit
+  static const String productRoute = '/api/products/:id';
+  // PUT /api/products/:id - Modifier un produit (Admin uniquement)  // DELETE /api/products/:id - Supprimer un produit (Admin uniquement)
+
+// GET /api/products/barcode/:barcode - Recherche par code-barres
+
+// GET /api/products/low-stock - Produits en stock faible
+  //static const String movementsRoute = '/movements';
+  // GET /api/users/me/profile - Profil de l'utilisateur connecté
+  static const String profileRoute = '/api/users/me/profile';
 
   // Storage keys
   static const String tokenKey = 'auth_token';

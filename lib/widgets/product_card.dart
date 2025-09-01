@@ -48,7 +48,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      product.code,
+                      product.barcode,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -102,16 +102,16 @@ class ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey[200],
       ),
-      child: product.imageUrl != null
-          ? CachedNetworkImage(
-        imageUrl: product.imageUrl!,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-      )
-          : const Icon(Icons.inventory_2, size: 30, color: Colors.grey),
+      // child: product.imageUrl != null
+      //     ? CachedNetworkImage(
+      //   //imageUrl: product.imageUrl!,
+      //   fit: BoxFit.cover,
+      //   placeholder: (context, url) => const Center(
+      //     child: CircularProgressIndicator(),
+      //   ),
+      //   errorWidget: (context, url, error) => const Icon(Icons.error),
+      // )
+      //     : const Icon(Icons.inventory_2, size: 30, color: Colors.grey),
     );
   }
 

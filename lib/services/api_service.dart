@@ -81,28 +81,45 @@ class ApiService {
   /// [email] : Email de l'utilisateur
   /// [password] : Mot de passe de l'utilisateur
   /// Retourne une ApiResponse<User> avec les données de l'utilisateur
+  /// Méthode pour se connecter avec email et mot de passe
   Future<ApiResponse<User>> login(String email, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
+        body: json.encode({'email': email.trim(), 'password': password}),
       );
 
-      final apiResponse = await _handleResponse<User>(response, (json) => User.fromJson(json));
+      final responseJson = json.decode(response.body);
 
-      if (apiResponse.success) {
-        _token = apiResponse.data?.token;
+      if (response.statusCode == 200 && responseJson['success'] == true) {
+        final userJson = responseJson['user'];
+        final token = responseJson['token'];
+
+        // Création de l'objet User avec token
+        final user = User.fromJson(userJson, token: token);
+
+        // Sauvegarde du token et de l'utilisateur dans SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(AppConstants.tokenKey, _token!);
-        if (apiResponse.data != null) {
-          await prefs.setString(AppConstants.userKey, json.encode(apiResponse.data!.toJson()));
-        }
-      }
+        await prefs.setString(AppConstants.tokenKey, token);
+        await prefs.setString(AppConstants.userKey, json.encode(userJson));
 
-      return apiResponse;
+        // Retourne ApiResponse succès
+        return ApiResponse<User>(
+          success: true,
+          message: responseJson['message'],
+          data: user,
+        );
+      } else {
+        // Retourne ApiResponse échec avec message
+        return ApiResponse<User>(
+          success: false,
+          message: responseJson['message'] ?? 'Email ou mot de passe incorrect',
+        );
+      }
     } catch (e) {
-      return ApiResponse(
+      // Gestion des erreurs réseau ou JSON
+      return ApiResponse<User>(
         success: false,
         message: 'Erreur de connexion: $e',
       );

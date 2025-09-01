@@ -9,6 +9,7 @@ import 'movements_screen.dart';
 import 'scanner_screen.dart';
 import 'profile_screen.dart';
 import 'add_movement_screen.dart';
+import 'dart:convert';
 
 class DashboardMagasinierScreen extends StatelessWidget {
   /// Tableau de bord spécifique au rôle Magasinier

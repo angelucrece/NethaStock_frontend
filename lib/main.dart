@@ -186,8 +186,6 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:nethastock/screens/movements_screen.dart';
-import 'package:nethastock/widgets/image_picker_widget.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
@@ -243,16 +241,16 @@ class MyApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
 
         // Gestion de la navigation basée sur l'état d'authentification et le rôle
-        // home: Consumer<AuthProvider>(
-        //   builder: (context, auth, child) {
-        //     if (auth.isAuthenticated) {
-        //       // Redirection vers le dashboard approprié selon le rôle
-        //       return auth.isAdmin ? DashboardAdminScreen() : DashboardMagasinierScreen();
-        //     }
-        //     return LoginScreen();
-        //   },
-        // ),
-        home:ImagePickerWidget () ,
+        home: Consumer<AuthProvider>(
+          builder: (context, auth, child) {
+            if (auth.isAuthenticated) {
+              // Redirection vers le dashboard approprié selon le rôle
+              return auth.isAdmin ? DashboardAdminScreen() : DashboardMagasinierScreen();
+            }
+            return LoginScreen();
+          },
+        ),
+        // home: LoginScreen(),
 
         // Routes nommées pour la navigation
         routes: {

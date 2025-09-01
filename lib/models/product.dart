@@ -1,28 +1,30 @@
+import 'package:flutter/cupertino.dart';
+
 class Product {
   final int id;
   final String name;
-  final String code;
-  final String description;
+  final String barcode;
+  final Text? description;
   final int quantity;
   final int threshold;
   final double price;
-  final String? imageUrl;
+  //final String? imageUrl;
   final int categoryId;
-  final String? qrCode;
+  //final String? qrCode;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
   Product({
     required this.id,
     required this.name,
-    required this.code,
+    required this.barcode,
     required this.description,
     required this.quantity,
     required this.threshold,
     required this.price,
-    this.imageUrl,
+    //this.imageUrl,
     required this.categoryId,
-    this.qrCode,
+    //this.qrCode,
     required this.createdAt,
     this.updatedAt,
   });
@@ -31,14 +33,14 @@ class Product {
     return Product(
       id: json['id'],
       name: json['name'],
-      code: json['code'],
+      barcode: json['code'],
       description: json['description'],
       quantity: json['quantity'],
       threshold: json['threshold'],
       price: json['price']?.toDouble() ?? 0.0,
-      imageUrl: json['imageUrl'],
+      //imageUrl: json['imageUrl'],
       categoryId: json['categoryId'],
-      qrCode: json['qrCode'],
+      //qrCode: json['qrCode'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
@@ -48,14 +50,14 @@ class Product {
     return {
       'id': id,
       'name': name,
-      'code': code,
+      'code': barcode,
       'description': description,
       'quantity': quantity,
       'threshold': threshold,
       'price': price,
-      'imageUrl': imageUrl,
+      //'imageUrl': imageUrl,
       'categoryId': categoryId,
-      'qrCode': qrCode,
+      //'qrCode': qrCode,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
@@ -64,7 +66,7 @@ class Product {
   Product copyWith({
     String? id,
     String? name,
-    String? description,
+    Text? description,
     int? quantity,
     // ajoutez d'autres propriétés
   }) {
@@ -78,7 +80,7 @@ class Product {
       price: price,
       categoryId: categoryId,
       createdAt: createdAt,
-      code: code,
+      barcode: barcode,
       // copiez les autres propriétés
     );
   }

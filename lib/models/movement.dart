@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Movement {
   final int id;
   final int productId;
@@ -6,7 +8,7 @@ class Movement {
   final int? userId;
   final DateTime date;
   final String status;
-  final String? motif;
+  final Text? motif;
   final DateTime createdAt;
 
   Movement({
@@ -28,7 +30,7 @@ class Movement {
     int? userId,
     DateTime? date,
     String? status,
-    String? motif,
+    Text? motif,
     DateTime? createdAt,
   }) {
     return Movement(

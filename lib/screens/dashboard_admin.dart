@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nethastock/models/user.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/product_provider.dart';
@@ -50,7 +51,7 @@ class DashboardAdminScreen extends StatelessWidget {
           children: [
             // En-tête
             Text(
-              'Bonjour Administrateur',
+              'Bonjour firstname',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -267,5 +268,6 @@ class DashboardAdminScreen extends StatelessWidget {
         ],
       ),
     );
+
   }
 }

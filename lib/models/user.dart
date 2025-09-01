@@ -40,19 +40,22 @@ class User {
 
   final int id; // Identifiant unique de l'utilisateur
   final String email; // Email de connexion
-  final String role; // Rôle: 'administrateur' ou 'magasinier'
+  final String password ; //mot de passe de l'utilisateur
   final String firstName; // Prénom de l'utilisateur
   final String lastName; // Nom de l'utilisateur
+  final String role; // Rôle: 'administrateur' ou 'magasinier'
+  final bool isActive;
   final String? phone; // Numéro de téléphone (optionnel)
   final DateTime createdAt; // Date de création du compte
   final DateTime? lastLogin; // Date de dernière connexion
-  final bool isActive;
+
 
   var token; // Statut actif/inactif du compte
 
   User({
     required this.id,
     required this.email,
+    required this.password,
     required this.role,
     required this.firstName,
     required this.lastName,
@@ -63,25 +66,28 @@ class User {
   });
 
   /// Factory method pour créer un User à partir des données JSON de l'API
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromJson(Map<String, dynamic> json, {String? token}) {
     return User(
       id: json['id'],
       email: json['email'],
+      password: '', // mot de passe non renvoyé par le backend
       role: json['role'],
       firstName: json['firstName'],
       lastName: json['lastName'],
-      phone: json['phone'],
+      phone: json['phone'], // peut être null
       createdAt: DateTime.parse(json['createdAt']),
       lastLogin: json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
-      isActive: json['isActive'],
-    );
+      isActive: true, // supposons que tous les utilisateurs renvoyés sont actifs
+    )..token = token; // assigne le token séparément
   }
+
 
   /// Convertit l'objet User en format JSON pour l'envoi à l'API
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'email': email,
+      'password':password,
       'role': role,
       'firstName': firstName,
       'lastName': lastName,
@@ -105,6 +111,7 @@ class User {
   User copyWith({
     int? id,
     String? email,
+    String? password,
     String? role,
     String? firstName,
     String? lastName,
@@ -116,6 +123,7 @@ class User {
     return User(
       id: id ?? this.id,
       email: email ?? this.email,
+      password: password ?? this.password,
       role: role ?? this.role,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,

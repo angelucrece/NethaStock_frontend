@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
+
 class Category {
   final int id;
   final String name;
-  final String? description;
+  final Text? description;
   final String? color;
   final DateTime createdAt;
 

@@ -187,7 +187,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (_searchQuery.isNotEmpty) {
       result = result.where((product) {
         return product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            product.code.toLowerCase().contains(_searchQuery.toLowerCase());
+            product.barcode.toLowerCase().contains(_searchQuery.toLowerCase());
       }).toList();
     }
 
@@ -197,7 +197,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         result.sort((a, b) => a.name.compareTo(b.name));
         break;
       case ProductSort.code:
-        result.sort((a, b) => a.code.compareTo(b.code));
+        result.sort((a, b) => a.barcode.compareTo(b.barcode));
         break;
       case ProductSort.quantity:
         result.sort((a, b) => a.quantity.compareTo(b.quantity));
