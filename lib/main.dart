@@ -186,7 +186,17 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:nethastock/providers/analytics_report_provider.dart';
+import 'package:nethastock/providers/dashboard_report_provider.dart';
+import 'package:nethastock/providers/movement_report_provide.dart';
+import 'package:nethastock/providers/stock_report_provider.dart';
+import 'package:nethastock/providers/user_stats_provider.dart';
+import 'package:nethastock/screens/dashboard_screen.dart';
+import 'package:nethastock/screens/onboardings.dart';
+import 'package:nethastock/services/api_service.dart';
+import 'package:nethastock/services/reports_api_service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/movement_provider.dart';
@@ -197,10 +207,21 @@ import 'screens/dashboard_magasinier.dart';
 import 'screens/dashboard_admin.dart';
 import 'utils/theme.dart';
 import 'services/notification_service.dart';
-
+import 'services/socket_service.dart';
+import 'services/api_service.dart';
 void main() async {
   // Initialisation des binding Flutter
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  SocketService.connect(); // Connecte le socket dès le lancement
+  runApp(MyApp());
+  // Récupérer le token depuis SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString("token") ?? "";
+
+  // Initialiser le service API avec le token
+
+  //runApp(MyApp(apiService: apiService));
 
   // Initialisation des services
   await NotificationService().initialize();
@@ -211,15 +232,25 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  String? _token; // Token JWT en mémoire
+
   @override
   Widget build(BuildContext context) {
+
+
     return MultiProvider(
       providers: [
         // Provider pour l'authentification et la gestion des utilisateurs
         ChangeNotifierProvider(create: (_) => AuthProvider()),
 
         // Provider pour la gestion des produits
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
+         ChangeNotifierProvider(create: (_) => ProductProvider()),
+        // ChangeNotifierProvider(
+        //   create: (_) => ProductProvider(ApiService()),
+        // ),
+
+
+       // ChangeNotifierProvider(create: (_) => UserStatsProvider()),
 
         // Provider pour la gestion des mouvements de stock
         ChangeNotifierProvider(create: (_) => MovementProvider()),
@@ -229,6 +260,13 @@ class MyApp extends StatelessWidget {
 
         // Provider pour la gestion des utilisateurs (admin seulement)
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => StockReportProvider()),
+        ChangeNotifierProvider(create: (_) => AnalyticsReportProvider()),
+        //ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => MovementReportProvider()),
+        //
+
+
       ],
       child: MaterialApp(
         title: 'NethaStock',
@@ -245,7 +283,7 @@ class MyApp extends StatelessWidget {
           builder: (context, auth, child) {
             if (auth.isAuthenticated) {
               // Redirection vers le dashboard approprié selon le rôle
-              return auth.isAdmin ? DashboardAdminScreen() : DashboardMagasinierScreen();
+              return auth.isAdmin ? DashboardScreen() : DashboardScreen();
             }
             return LoginScreen();
           },
@@ -257,7 +295,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginScreen(),
           '/dashboard': (context) => Consumer<AuthProvider>(
             builder: (context, auth, child) {
-              return auth.isAdmin ? DashboardAdminScreen() : DashboardMagasinierScreen();
+              return auth.isAdmin ? DashboardScreen() : DashboardScreen();
             },
           ),
         },

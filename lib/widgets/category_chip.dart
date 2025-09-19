@@ -22,6 +22,7 @@ class CategoryChip extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
+      splashColor: color.withOpacity(0.2),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -36,18 +37,18 @@ class CategoryChip extends StatelessWidget {
               category.name,
               style: TextStyle(
                 color: selected ? Colors.white : color,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
             if (onDelete != null) ...[
               const SizedBox(width: 4),
-              GestureDetector(
-                onTap: onDelete,
-                child: Icon(
-                  Icons.close,
-                  size: 16,
-                  color: selected ? Colors.white : color,
-                ),
+              IconButton(
+                onPressed: onDelete,
+                icon: Icon(Icons.close, size: 16),
+                padding: EdgeInsets.zero, // réduit la zone de padding par défaut
+                constraints: const BoxConstraints(), // supprime la taille minimale
+                color: selected ? Colors.white : color,
+                tooltip: "Supprimer la catégorie",
               ),
             ],
           ],
@@ -56,14 +57,17 @@ class CategoryChip extends StatelessWidget {
     );
   }
 
+  /// Essaie de convertir la couleur hexadécimale en [Color].
+  /// Exemple attendu: "#FF5733" ou "FF5733"
   Color _getCategoryColor() {
-    if (category.color != null) {
+    if (category.color != null && category.color!.isNotEmpty) {
       try {
-        return Color(int.parse(category.color!.replaceFirst('#', '0xFF')));
-      } catch (e) {
-        return Colors.blue;
+        final hex = category.color!.replaceFirst('#', '');
+        return Color(int.parse('0xFF$hex'));
+      } catch (_) {
+        return Colors.grey; // fallback si la conversion échoue
       }
     }
-    return Colors.blue;
+    return Colors.grey; // fallback si aucune couleur définie
   }
 }

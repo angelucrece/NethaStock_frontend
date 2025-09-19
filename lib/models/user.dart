@@ -36,21 +36,19 @@
 
 class User {
   /// Modèle représentant un utilisateur du système NethaStock
-  /// Gère les informations d'authentification et les rôles
-
-  final int id; // Identifiant unique de l'utilisateur
-  final String email; // Email de connexion
-  final String password ; //mot de passe de l'utilisateur
-  final String firstName; // Prénom de l'utilisateur
-  final String lastName; // Nom de l'utilisateur
-  final String role; // Rôle: 'administrateur' ou 'magasinier'
+  final int id;
+  final String email;
+  final String password; // mot de passe non renvoyé par le backend
+  final String firstName;
+  final String lastName;
+  final String role; // 'administrateur' ou 'magasinier'
   final bool isActive;
-  final String? phone; // Numéro de téléphone (optionnel)
-  final DateTime createdAt; // Date de création du compte
-  final DateTime? lastLogin; // Date de dernière connexion
-
-
-  var token; // Statut actif/inactif du compte
+  final String? phone; // optionnel
+  final DateTime createdAt;
+  final DateTime? lastLogin;
+  final List<dynamic>? recentMovements; // mouvements récents de l'utilisateur
+  final Map<String, dynamic>? stats; // 👈 Nouveau champ pour les stats
+  String? token;
 
   User({
     required this.id,
@@ -63,51 +61,56 @@ class User {
     required this.createdAt,
     this.lastLogin,
     required this.isActive,
+    this.recentMovements, // ajouter ici
+    this.stats,
+
   });
 
-  /// Factory method pour créer un User à partir des données JSON de l'API
+  /// Factory sécurisée pour créer un User à partir du JSON
   factory User.fromJson(Map<String, dynamic> json, {String? token}) {
     return User(
-      id: json['id'],
-      email: json['email'],
+      id: json['id'] ?? 0,
+      email: (json['email'] ?? '').toString(),
       password: '', // mot de passe non renvoyé par le backend
-      role: json['role'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      phone: json['phone'], // peut être null
-      createdAt: DateTime.parse(json['createdAt']),
-      lastLogin: json['lastLogin'] != null ? DateTime.parse(json['lastLogin']) : null,
-      isActive: true, // supposons que tous les utilisateurs renvoyés sont actifs
-    )..token = token; // assigne le token séparément
+      role: (json['role'] ?? 'magasinier').toString(),
+      firstName: (json['first_name'] ?? '').toString(),
+      lastName: (json['last_name'] ?? '').toString(),
+      phone: json['phone']?.toString(),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+      lastLogin: json['last_login'] != null
+          ? DateTime.parse(json['last_login'])
+          : null,
+      isActive: json['active'] ?? true,
+      recentMovements: (json['recentMovements'] as List<dynamic>?) ?? [],
+      stats: json['stats'], // 👈 Récupération des stats
+    )..token = token;
   }
 
-
-  /// Convertit l'objet User en format JSON pour l'envoi à l'API
+  /// Convertit l'objet User en JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'email': email,
-      'password':password,
+      'password': password,
       'role': role,
-      'firstName': firstName,
-      'lastName': lastName,
+      'first_name': firstName,
+      'last_name': lastName,
       'phone': phone,
-      'createdAt': createdAt.toIso8601String(),
-      'lastLogin': lastLogin?.toIso8601String(),
-      'isActive': isActive,
+      'created_at': createdAt.toIso8601String(),
+      'last_login': lastLogin?.toIso8601String(),
+      'active': isActive,
+      'recentMovements': recentMovements,
+      'stats': stats, // 👈 Ajout au JSON
     };
   }
 
-  /// Getter pour le nom complet de l'utilisateur
   String get fullName => '$firstName $lastName';
 
-  /// Getter pour vérifier si l'utilisateur est administrateur
   bool get isAdmin => role == 'administrateur';
-
-  /// Getter pour vérifier si l'utilisateur est magasinier
   bool get isMagasinier => role == 'magasinier';
 
-  /// Méthode pour créer une copie de l'utilisateur avec des valeurs modifiées
   User copyWith({
     int? id,
     String? email,
@@ -134,3 +137,4 @@ class User {
     );
   }
 }
+

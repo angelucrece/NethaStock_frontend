@@ -17,15 +17,15 @@ class PendingApprovalsScreen extends StatelessWidget {
         backgroundColor: Colors.blue.shade700,
       ),
       body: pendingMovements.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-        padding: EdgeInsets.all(8),
+         ? _buildEmptyState()
+           : ListView.builder(
+         padding: EdgeInsets.all(8),
         itemCount: pendingMovements.length,
-        itemBuilder: (context, index) => MovementItem(
-          movement: pendingMovements[index],
-          onTap: () => _showValidationDialog(context, pendingMovements[index]),
-        ),
-      ),
+         itemBuilder: (context, index) => MovementItem(
+           movement: pendingMovements[index],
+           onTap: () => _showValidationDialog(context, pendingMovements[index]),
+         ),
+       ),
     );
   }
 

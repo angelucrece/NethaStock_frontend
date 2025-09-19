@@ -5,6 +5,10 @@ import '../utils/constants.dart';
 class AppConstants {
   static const String appName = 'NethaStock';
   static const String apiBaseUrl = 'http://localhost:3000/api';
+  //tatic const String apiBaseUrl = "http://127.0.0.1:8000/api"; // ton API
+  //static const String tokenKey = "auth_token"; // clé pour le token JWT
+  static const String refreshTokenKey = "refresh_token"; // clé pour le refresh token
+  //static const String userKey = "user"; // clé pour les infos utilisateur
 
   // Routes
   // POST /api/auth/login - Connexion utilisateur
@@ -57,6 +61,14 @@ class AppColors {
   static const Color danger = Color(0xFFF44336);
   static const Color dark = Color(0xFF343A40);
   static const Color light = Color(0xFFF8F9FA);
+  // Définition des couleurs de l'application (corrige l'erreur avecOpacity)
+  final Color _primaryColor = Color(0xFF2196F3);
+  final Color _secondaryColor = Color(0xFFFF9800);
+  final Color _accentColor = Color(0xFFFF9800);
+  final Color _successColor = Color(0xFF10B981);
+  final Color _warningColor = Color(0xFFF59E0B);
+  final Color _dangerColor = Color(0xFFEF4444);
+  final Color _infoColor = Color(0xFF8B5CF6);
 }
 
 class AppIcons {

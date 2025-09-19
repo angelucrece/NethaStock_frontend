@@ -185,6 +185,10 @@ import '../providers/auth_provider.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/loading_indicator.dart';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:iconsax/iconsax.dart';
+
 class LoginScreen extends StatefulWidget {
   /// Écran de connexion à l'application NethaStock
   /// Gère l'authentification des utilisateurs avec validation des champs
@@ -194,53 +198,57 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>(); // Clé pour valider le formulaire
-  final _emailController = TextEditingController(); // Controller pour le champ email
-  final _passwordController = TextEditingController(); // Controller pour le champ mot de passe
-  bool _isLoading = false; // État de chargement pendant la connexion
-  bool _obscurePassword = true; // Visibilité du mot de passe
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
-  /// Méthode pour gérer la soumission du formulaire de connexion
+  // Utilisation de la charte graphique fournie
+  final Color _primaryColor = Color(0xFF2196F3);
+  final Color _secondaryColor = Color(0xFFFF9800);
+  final Color _accentColor = Color(0xFFFF9800);
+  final Color _successColor = Color(0xFF10B981);
+  final Color _warningColor = Color(0xFFF59E0B);
+  final Color _dangerColor = Color(0xFFEF4444);
+  final Color _infoColor = Color(0xFF8B5CF6);
+
   Future<void> _submitForm() async {
-    // Valide tous les champs du formulaire
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true); // Active l'indicateur de chargement
+    setState(() => _isLoading = true);
 
     try {
-      // Tente de se connecter via le AuthProvider
       final success = await Provider.of<AuthProvider>(context, listen: false).login(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
       if (!success) {
-        // Affiche une erreur si la connexion échoue
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Email ou mot de passe incorrect'),
-            backgroundColor: Colors.red,
+            backgroundColor: _dangerColor,
             duration: Duration(seconds: 3),
           ),
         );
       }
     } catch (error) {
-      // Affiche une erreur en cas d'exception
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erreur de connexion: $error'),
-          backgroundColor: Colors.red,
+          backgroundColor: _dangerColor,
           duration: Duration(seconds: 3),
         ),
       );
     } finally {
-      setState(() => _isLoading = false); // Désactive le chargement
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Dimensions de l'écran
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Container(
@@ -249,7 +257,11 @@ class _LoginScreenState extends State<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade700, Colors.blue.shade300],
+            colors: [
+              _primaryColor.withOpacity(0.9),
+              _primaryColor.withOpacity(0.7),
+              _primaryColor.withOpacity(0.5),
+            ],
           ),
         ),
         child: Center(
@@ -257,14 +269,15 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               width: size.width > 600 ? 500 : size.width * 0.9,
               padding: EdgeInsets.all(24),
+              margin: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: Offset(0, 10),
                   ),
                 ],
               ),
@@ -273,34 +286,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo de l'application
-                    // Icon(
-                    //   Icons.inventory_2,
-                    //   size: 60,
-                    //   color: Colors.blue.shade700,
-                    // ),
-                    Image.asset(
-                      'assets/images/logo.jpg',
-                      height: 100,
-//                    width: 100,
-
+                    // Logo et titre
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: _primaryColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Iconsax.box,
+                        size: 40,
+                        color: _primaryColor,
+                      ),
                     ),
                     SizedBox(height: 16),
 
-                    // Titre de l'application
                     Text(
                       'NethaStock',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade700,
+                        color: _primaryColor,
                       ),
                     ),
                     SizedBox(height: 8),
 
-                    // Sous-titre
                     Text(
-                      'Bienvenue dans votre Gestionnaire de Stocks',
+                      'Gestionnaire de Stocks',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey.shade600,
@@ -309,10 +321,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 32),
 
                     // Champ email
-                    CustomTextField(
+                    TextFormField(
                       controller: _emailController,
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email, color: Colors.blue.shade700),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: TextStyle(color: Colors.grey.shade700),
+                        prefixIcon: Icon(Iconsax.sms, color: _primaryColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: _primaryColor, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                      ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -324,23 +349,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 20),
 
                     // Champ mot de passe
-                    CustomTextField(
+                    TextFormField(
                       controller: _passwordController,
-                      labelText: 'Mot de passe',
-                      prefixIcon: Icon(Icons.lock, color: Colors.blue.shade700),
-                      obscureText: _obscurePassword,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.blue.shade700,
+                      decoration: InputDecoration(
+                        labelText: 'Mot de passe',
+                        labelStyle: TextStyle(color: Colors.grey.shade700),
+                        prefixIcon: Icon(Iconsax.lock, color: _primaryColor),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Iconsax.eye : Iconsax.eye_slash,
+                            color: Colors.grey.shade500,
+                          ),
+                          onPressed: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
+                          },
                         ),
-                        onPressed: () {
-                          setState(() => _obscurePassword = !_obscurePassword);
-                        },
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: _primaryColor, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
                       ),
+                      obscureText: _obscurePassword,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Veuillez entrer votre mot de passe';
@@ -356,43 +394,66 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Bouton de connexion
                     SizedBox(
                       width: double.infinity,
+                      height: 56,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _submitForm,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
+                          backgroundColor: _primaryColor,
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          elevation: 3,
+                          shadowColor: _primaryColor.withOpacity(0.3),
                         ),
                         child: _isLoading
-                            ? LoadingIndicator(size: 20) // Indicateur de chargement
+                            ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        )
                             : Text(
                           'Se connecter',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 20),
 
                     // Lien pour mot de passe oublié
                     TextButton(
                       onPressed: () {
-                        // TODO: Implémenter la récupération de mot de passe
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Fonctionnalité à venir'),
-                            backgroundColor: Colors.blue.shade700,
+                            backgroundColor: _infoColor,
                           ),
                         );
                       },
                       child: Text(
                         'Mot de passe oublié?',
-                        style: TextStyle(color: Colors.blue.shade700),
+                        style: TextStyle(
+                          color: _primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 10),
+
+                    // Version de l'application
+                    Text(
+                      'Version 1.0.0',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -407,7 +468,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    // Nettoie les controllers pour éviter les fuites de mémoire
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

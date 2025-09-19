@@ -350,6 +350,8 @@
 //   }
 // }
 // screens/movements_screen.dart
+
+
 import 'package:flutter/material.dart';
 import 'package:nethastock/models/movement.dart';
 import 'package:nethastock/providers/auth_provider.dart';
@@ -357,6 +359,7 @@ import 'package:provider/provider.dart';
 import '../providers/movement_provider.dart';
 import '../widgets/movement_item.dart';
 import '../widgets/filter_widget.dart';
+import 'create_movement_screen.dart';
 
 class MovementsScreen extends StatefulWidget {
   @override
@@ -369,17 +372,33 @@ class _MovementsScreenState extends State<MovementsScreen> {
   DateTime? _endDate;
   String _movementType = 'all';
   bool _showFilters = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<MovementProvider>(context, listen: false).fetchMovements();
+    _loadMovements();
+  }
+
+  // Méthode pour charger les mouvements
+  Future<void> _loadMovements() async {
+    try {
+      await Provider.of<MovementProvider>(context, listen: false).fetchMovements();
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors du chargement des mouvements')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final movementProvider = Provider.of<MovementProvider>(context);
-    final movements = movementProvider.movements;
+    final movements = movementProvider.filteredMovements; // ✅ Correction: utiliser le getter public
 
     return Scaffold(
       appBar: AppBar(
@@ -389,6 +408,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
           IconButton(
             icon: Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
             onPressed: () => setState(() => _showFilters = !_showFilters),
+            tooltip: _showFilters ? 'Masquer les filtres' : 'Afficher les filtres',
           ),
         ],
       ),
@@ -396,22 +416,31 @@ class _MovementsScreenState extends State<MovementsScreen> {
         children: [
           if (_showFilters) _buildFilters(),
           Expanded(
-            child: movements.isEmpty
+            child: _isLoading
+                ? _buildLoadingState()
+                : movements.isEmpty
                 ? _buildEmptyState()
-                : ListView.builder(
-              padding: EdgeInsets.all(8),
-              itemCount: movements.length,
-              itemBuilder: (context, index) => MovementItem(
-                movement: movements[index],
-                onTap: () => _showMovementDetails(context, movements[index]),
-              ),
-            ),
+                : _buildMovementsList(movements),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final created = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddMovementScreen()),
+          );
+          if (created == true) {
+            // Rafraîchir la liste après ajout
+            Provider.of<MovementProvider>(context, listen: false).fetchMovements();
+          }
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
 
+  // Widget pour afficher les filtres
   Widget _buildFilters() {
     return FilterWidget(
       formKey: _filterFormKey,
@@ -426,6 +455,23 @@ class _MovementsScreenState extends State<MovementsScreen> {
     );
   }
 
+  // Widget pour l'état de chargement
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
+          ),
+          SizedBox(height: 16),
+          Text('Chargement des mouvements...'),
+        ],
+      ),
+    );
+  }
+
+  // Widget pour l'état vide
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -433,22 +479,65 @@ class _MovementsScreenState extends State<MovementsScreen> {
         children: [
           Icon(Icons.compare_arrows, size: 64, color: Colors.grey.shade400),
           SizedBox(height: 16),
-          Text('Aucun mouvement enregistré', style: TextStyle(fontSize: 18)),
+          Text(
+            'Aucun mouvement enregistré',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
           SizedBox(height: 8),
-          Text('Commencez par ajouter un mouvement', style: TextStyle(color: Colors.grey.shade500)),
+          Text(
+            'Commencez par ajouter un mouvement',
+            style: TextStyle(color: Colors.grey.shade500),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              // Navigation vers l'écran d'ajout de mouvement
+              Navigator.pushNamed(context, '/add-movement');
+            },
+            child: Text('Ajouter un mouvement'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade700,
+              foregroundColor: Colors.white,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  void _applyFilters() {
-    Provider.of<MovementProvider>(context, listen: false).applyFilters(
-      startDate: _startDate,
-      endDate: _endDate,
-      type: _movementType == 'all' ? null : _movementType,
+  // Widget pour la liste des mouvements
+  Widget _buildMovementsList(List<Movement> movements) {
+    return RefreshIndicator(
+      onRefresh: _loadMovements,
+      color: Colors.blue.shade700,
+      child: ListView.builder(
+        padding: EdgeInsets.all(8),
+        itemCount: movements.length,
+        itemBuilder: (context, index) {
+          // ✅ Récupération explicite du mouvement
+          final Movement movement = movements[index];
+
+          return MovementItem(
+            movement: movement, // ✅ Passage de l'objet Movement
+            onTap: () => _showMovementDetails(context, movement),
+          );
+        },
+      ),
     );
   }
+  // Appliquer les filtres
+  void _applyFilters() {
+    if (_filterFormKey.currentState?.validate() ?? false) {
+      Provider.of<MovementProvider>(context, listen: false).applyFilters(
+        startDate: _startDate,
+        endDate: _endDate,
+        type: _movementType == 'all' ? null : _movementType,
+      );
+    }
+  }
 
+  // Réinitialiser les filtres
   void _resetFilters() {
     setState(() {
       _startDate = null;
@@ -458,6 +547,7 @@ class _MovementsScreenState extends State<MovementsScreen> {
     Provider.of<MovementProvider>(context, listen: false).resetFilters();
   }
 
+  // Afficher les détails d'un mouvement
   void _showMovementDetails(BuildContext context, Movement movement) {
     showDialog(
       context: context,
@@ -473,62 +563,154 @@ class MovementDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPending = movement.status == 'pending';
-    final isAdmin = Provider.of<AuthProvider>(context).user?.role == 'administrateur';
+    final isPending = movement.isPending;
+    final isAdmin = Provider.of<AuthProvider>(context, listen: false).user?.role == 'administrateur';
 
-    return AlertDialog(
-      title: Text('Détails du Mouvement'),
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Produit: ${movement.productId}'),
-          Text('Type: ${movement.type == 'entry' ? 'Entrée' : 'Sortie'}'),
-          Text('Quantité: ${movement.quantity}'),
-          Text('Statut: ${_getStatusText(movement.status)}'),
-          if (movement.motif != null) Text('Motif: ${movement.motif}'),
-          Text('Date: ${movement.date.toString()}'),
-        ],
-      ),
-      actions: [
-        if (isPending && isAdmin) ...[
-          TextButton(
-            onPressed: () => _validateMovement(context, true),
-            child: Text('Valider', style: TextStyle(color: Colors.green)),
-          ),
-          TextButton(
-            onPressed: () => _validateMovement(context, false),
-            child: Text('Rejeter', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Fermer'),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // En-tête du dialogue
+            Row(
+              children: [
+                Icon(
+                  movement.isEntry ? Icons.arrow_downward : Icons.arrow_upward,
+                  color: movement.isEntry ? Colors.green : Colors.red,
+                  size: 24,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Détails du Mouvement',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 16),
+
+            // Informations du mouvement
+            _buildDetailRow('Produit:', movement.productName.isNotEmpty ? movement.productName : 'Produit ${movement.productId}'),
+            _buildDetailRow('Type:', movement.typeText),
+            _buildDetailRow('Quantité:', movement.quantity.toString()),
+            _buildDetailRow('Statut:', movement.statusText),
+
+            if (movement.motif != null && movement.motif!.isNotEmpty)
+              _buildDetailRow('Motif:', movement.motif!),
+
+            _buildDetailRow('Date:', movement.formattedDate),
+            _buildDetailRow('Heure:', movement.formattedTime),
+
+            SizedBox(height: 16),
+
+            // Actions
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (isPending && isAdmin) ...[
+                  TextButton(
+                    onPressed: () => _validateMovement(context, true),
+                    child: Text(
+                      'Valider',
+                      style: TextStyle(color: Colors.green.shade700),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _validateMovement(context, false),
+                    child: Text(
+                      'Rejeter',
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
+                  ),
+                ],
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Fermer'),
+                ),
+              ],
+            ),
+
+          ],
         ),
-      ],
+
+      ),
     );
   }
 
-  String _getStatusText(String status) {
-    switch (status) {
-      case 'pending': return 'En attente';
-      case 'validated': return 'Validé';
-      case 'rejected': return 'Rejeté';
-      default: return status;
+  // Widget pour afficher une ligne de détail
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.grey.shade800,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Valider ou rejeter un mouvement
+  void _validateMovement(BuildContext context, bool approve) async {
+    try {
+      final movementProvider = Provider.of<MovementProvider>(context, listen: false);
+
+      if (movement.id == null) {
+        throw Exception('Mouvement invalide: ID manquant');
+      }
+
+      bool success;
+      if (approve) {
+        success = await movementProvider.validateMovement(movement.id!, approve);
+      } else {
+        success = await movementProvider.validateMovement(movement.id!, approve);
+      }
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(approve ? 'Mouvement validé avec succès' : 'Mouvement rejeté'),
+            backgroundColor: approve ? Colors.green : Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de la validation: ${movementProvider.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la validation: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
-  void _validateMovement(BuildContext context, bool approve) async {
-    try {
-      // Implémenter la validation via l'API
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(approve ? 'Mouvement validé' : 'Mouvement rejeté')),
-      );
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la validation')),
-      );
-    }
-  }
 }

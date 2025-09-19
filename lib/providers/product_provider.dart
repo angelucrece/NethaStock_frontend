@@ -167,98 +167,94 @@
 // }
 
 // providers/product_provider.dart
-import 'package:flutter/foundation.dart';
+// providers/product_provider.dart
+// Import des packages et fichiers nécessaires
+import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
-import '../services/notification_service.dart';
+//import '../services/api_services.dart';
+import 'package:flutter/material.dart';
+import '../models/product.dart';
+import '../services/api_service.dart';
 
 class ProductProvider with ChangeNotifier {
   List<Product> _products = [];
-  List<Product> _filteredProducts = [];
-  bool _isLoading = false;
-  String? _error;
-  String _searchQuery = '';
-  int? _categoryFilter;
+  int currentPage = 1;
+  int totalPages = 1;
+  bool _loading = false;
+  String search = '';
+  bool lowStockFilter = false;
 
-  List<Product> get products => _filteredProducts;
-  List<Product> get allProducts => _products;
-  bool get isLoading => _isLoading;
-  String? get error => _error;
-  List<Product> get lowStockProducts => _products.where((p) => p.isLowStock).toList();
+  List<Product> get products => _products;
+  bool get loading => _loading;
+  List<dynamic> _lowStockAlerts = [];
+  List<dynamic> get lowStockAlerts => _lowStockAlerts;
 
-  ProductProvider() {
-    fetchProducts();
-  }
-
-  Future<void> fetchProducts() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final response = await ApiService().getProducts(categoryId: _categoryFilter);
-
-      if (response.success) {
-        _products = response.data ?? [];
-        _applyFilters();
-        _error = null;
-
-        // Vérifier les alertes stock au chargement
-        _checkStockAlerts();
-      } else {
-        _error = response.message;
-      }
-    } catch (e) {
-      _error = 'Erreur de chargement des produits: $e';
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+  Future<void> loadLowStockAlerts() async {
+    final response = await ApiService().getLowStockAlerts();
+    if (response.success && response.data != null) {
+      _lowStockAlerts = response.data!;
+    } else {
+      _lowStockAlerts = [];
     }
-  }
-  void _applyFilters() {
-    // Implémentez votre logique de filtrage ici
     notifyListeners();
   }
 
-  Future<bool> updateProductStock(int productId, int newQuantity, String operationType) async {
+
+  Future<void> loadProducts({int page = 1}) async {
+    _loading = true;
+    notifyListeners();
     try {
-      final product = _products.firstWhere((p) => p.id == productId);
-      final updatedProduct = product.copyWith(quantity: newQuantity);
-
-      final response = await ApiService().updateProduct(updatedProduct);
-
-      if (response.success) {
-        final index = _products.indexWhere((p) => p.id == productId);
-        if (index != -1) {
-          _products[index] = response.data!;
-          _applyFilters();
-
-          // Vérifier les alertes après mise à jour
-          _checkStockAlertsForProduct(response.data!);
-        }
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  void _checkStockAlerts() {
-    for (final product in _products) {
-      _checkStockAlertsForProduct(product);
-    }
-  }
-
-  void _checkStockAlertsForProduct(Product product) {
-    if (product.isLowStock) {
-      NotificationService().showStockAlert(
-          product.name,
-          product.quantity,
-          product.threshold
+      final result = await ApiService().fetchProducts(
+        search: search,
+        page: page,
+        lowStock: lowStockFilter,
       );
+      _products = result['products'];
+      currentPage = result['pagination']['page'];
+      totalPages = result['pagination']['totalPages'];
+    } catch (e) {
+      debugPrint('Erreur chargement produits: $e');
     }
+    _loading = false;
+    notifyListeners();
   }
 
-// ... reste des méthodes existantes ...
+  Future<void> deleteProduct(int id) async {
+    await ApiService().deleteProduct(id);
+    _products.removeWhere((p) => p.id == id);
+    notifyListeners();
+  }
+
+  Future<void> createOrUpdateProduct(Product product, {bool isUpdate = false}) async {
+    if (isUpdate) {
+      final updated = await ApiService().updateProduct(product.id, {
+        'name': product.name,
+        'barcode': product.barcode,
+        'price': product.price,
+        'quantity': product.quantity,
+        'threshold': product.threshold,
+        'categoryId': product.categoryId,
+        'description': product.description,
+        'purchasePrice': product.purchasePrice,
+        'imageUrl': product.imageUrl,
+      });
+      final index = _products.indexWhere((p) => p.id == updated.id);
+      if (index != -1) _products[index] = updated;
+    } else {
+      final created = await ApiService().createProduct({
+        'name': product.name,
+        'barcode': product.barcode,
+        'price': product.price,
+        'quantity': product.quantity,
+        'threshold': product.threshold,
+        'categoryId': product.categoryId,
+        'description': product.description,
+        'purchasePrice': product.purchasePrice,
+        'imageUrl': product.imageUrl,
+      });
+      _products.add(created);
+    }
+    notifyListeners();
+  }
 }
